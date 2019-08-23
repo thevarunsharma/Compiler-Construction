@@ -1,10 +1,10 @@
-#include<iostream>
+#include <iostream>
 #include <fstream>
-#include<streambuf>
-#include<iomanip>
-#include<unordered_map>
-#include<string>
-#include<regex>
+#include <streambuf>
+#include <iomanip>
+#include <unordered_map>
+#include <string>
+#include <regex>
 
 using namespace std;
 
