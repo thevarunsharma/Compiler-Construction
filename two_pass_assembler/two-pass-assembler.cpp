@@ -9,8 +9,8 @@
 using namespace std;
 
 string int_to_hex(int i){
-    std::stringstream stream;
-    stream << std::setfill('0') << std::setw(4) << std::hex << i;
+    stringstream stream;
+    stream << setfill('0') << setw(4) << hex << uppercase << i;
     return stream.str();
 }
 
@@ -23,7 +23,7 @@ public:
     unordered_map<string, int> labels;
 
     TwoPassAssembler(string fname, int saddr) : 
-    filename(fname), start_addr(saddr), end_addr(-1) {
+    filename(fname), start_addr(saddr), end_addr(saddr) {
         opcodes["MVI_A"] = "3E";
         opcodes["LDA"] = "3A";
         opcodes["STA"] = "32";
@@ -69,8 +69,10 @@ void TwoPassAssembler::symbol_parse(void){
         if (find(Addr_tokens.begin(), Addr_tokens.end(), prev) != Addr_tokens.end()
             && regex_match(Word, regex("([0-9a-fA-F]{4})"))){
             string byte1 = Word.substr(2, 2), byte2 = Word.substr(0, 2);
-            table[addr++] = byte1;
-            table[addr++] = byte2;
+            table[addr] = byte1;
+            addr = (addr+1)&0xFFFF;
+            table[addr] = byte2;
+            addr = (addr+1)&0xFFFF;
         }else if (label != label_end && slabel == Word){
             labels[Word] = addr;
             label++;
@@ -80,7 +82,8 @@ void TwoPassAssembler::symbol_parse(void){
                 slabel = extract[1];
             }
         }else {
-            table[addr++] = Word;
+            table[addr] = Word;
+            addr = (addr+1)&0xFFFF;
         }
         prev = Word;
     }
@@ -89,7 +92,7 @@ void TwoPassAssembler::symbol_parse(void){
 
 unordered_map<int, string> TwoPassAssembler::to_machine_code(){
     unordered_map<int, string> machine_code;
-    for(int addr = start_addr; addr < end_addr; addr++){
+    for(int addr = start_addr; addr != end_addr; addr=(addr+1)&0xFFFF){
         string tok = table[addr];
         if (opcodes.find(tok) != opcodes.end())
             tok = opcodes[tok];
@@ -103,6 +106,11 @@ int main(int argc, char *argv[]){
     string saddr(argv[2]);
     saddr = "0x" + saddr;
     int start_addr = stoul(saddr, nullptr, 16);
+
+    if (start_addr < 0x0000 || start_addr > 0xFFFF){
+        cout << "Error: invalid starting address for 8085" << endl;
+        return -1;
+    }
     
     TwoPassAssembler assembler(filename, start_addr);
     assembler.symbol_parse();
@@ -110,8 +118,9 @@ int main(int argc, char *argv[]){
     machine_code = assembler.to_machine_code();
 
     cout << "Address\t\tPnemonic\tMachine Code" << endl;
-    for (int addr=assembler.start_addr; addr<assembler.end_addr; addr++){
-        cout << hex << "0x" << addr << "\t\t";
+    for (int addr=assembler.start_addr; addr != assembler.end_addr;addr=(addr+1)&0xFFFF){
+        cout << "0x";
+        cout << setfill('0') << setw(4) << hex << uppercase << addr << "\t\t";
         cout << assembler.table[addr] << "\t\t" << machine_code[addr] << endl;
     }
     return 0;
