@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import re
 
@@ -8,7 +10,8 @@ class TwoPassAssembler:
                 "MOV_B_A" : "47",
                 "MVI_A" : "3E",
                 "ADD_B" : "80",
-                "ADI" : "C6" }
+                "ADI" : "C6" ,
+                "HLT" : "76"}
     def __init__(self, filename, start_addr):
         self.filename = filename
         self.start_addr = start_addr

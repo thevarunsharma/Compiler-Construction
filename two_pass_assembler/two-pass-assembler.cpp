@@ -31,6 +31,7 @@ public:
         opcodes["MVI_A"] = "3E";
         opcodes["ADD_B"] = "80";
         opcodes["ADI"] = "C6";
+        opcodes["HLT"] = "76";
     }
     void symbol_parse(void);
     unordered_map<int, string> to_machine_code(void);
