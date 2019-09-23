@@ -1,0 +1,2 @@
+This is some text
+CHECK CAPS and check lowercase *
