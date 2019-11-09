@@ -9,7 +9,7 @@
         yylval.dval = atof(yytext);
         return NUMBER; 
     }
-[\t]    ;       /* ignore whitespace */
+[\t ]    ;       /* ignore whitespace */
 [A-Za-z][A-Za-z0-9]*   { 
             yylval.symp = symlook(yytext);
             return NAME;
@@ -22,6 +22,6 @@
 /* run as follows:
 $ yacc -d calc.y
 $ lex calc.l
-$ cc -o calc y.tab.h lec.yy.c -ly -ll
+$ cc -o calc y.tab.c lec.yy.c -ly -ll
 $ ./calc
 */
