@@ -1,0 +1,8 @@
+int i = 0;
+int c = 1;
+while (i < 10) {
+    c = c + i;
+    if ( c > 10 )
+        break;
+    i = i + 1;
+}
